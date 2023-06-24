@@ -1,0 +1,28 @@
+version: "3"
+networks:
+  postgres_network:
+    driver: bridge
+
+services:
+  postgres:
+    image: postgres
+    environment:
+    - POSTGRES_PASSWORD=developer
+    - POSTGRES_USER=developer
+    - POSTGRES_DB=cthulhu
+    ports:
+      - 5432:5432
+    networks:
+      - postgres_network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - 80:80
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=developer@mail.ru
+      - PGADMIN_DEFAULT_PASSWORD=developer
+    depends_on:
+      - postgres
+    networks:
+      - postgres_network

@@ -1,19 +1,25 @@
 version: "3"
 networks:
-  postgres_network:
+  cthulhu_network:
     driver: bridge
+
+volumes:
+  pgdata:
 
 services:
   postgres:
     image: postgres
     environment:
-    - POSTGRES_PASSWORD=developer
-    - POSTGRES_USER=developer
-    - POSTGRES_DB=cthulhu
+      - POSTGRES_PASSWORD=developer
+      - POSTGRES_USER=developer
+      - POSTGRES_DB=cthulhu
+      - PG_DATA=/var/lib/postgresql/data
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     ports:
       - 5432:5432
     networks:
-      - postgres_network
+      - cthulhu_network
 
   pgadmin:
     image: dpage/pgadmin4
@@ -25,4 +31,19 @@ services:
     depends_on:
       - postgres
     networks:
-      - postgres_network
+      - cthulhu_network
+
+  service:
+    build:
+      context: .
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - 3000:3000
+    depends_on:
+      - postgres
+    networks:
+      - cthulhu_network
+    command: npm run start:dev && migrate:latest
+    env_file:
+      - .env

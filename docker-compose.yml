@@ -36,6 +36,7 @@ services:
   service:
     build:
       context: .
+    image: api_service
     volumes:
       - .:/usr/src/app
     ports:
@@ -44,6 +45,6 @@ services:
       - postgres
     networks:
       - cthulhu_network
-    command: npm run start:dev && migrate:latest
+    command: sh -c "npm run migrate:latest && npm run start:dev"
     env_file:
       - .env

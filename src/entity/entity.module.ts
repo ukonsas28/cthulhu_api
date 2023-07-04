@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { UsersModule } from './users/users.module';
+import { PersonsModule } from './persons/persons.module';
 
 @Module({
-  imports: [UsersModule],
+  imports: [PersonsModule],
 })
 export class EntityModule {}

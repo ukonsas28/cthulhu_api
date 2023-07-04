@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { pino } from 'pino';
+import pinoHttpLogger from 'pino-http';
 
 @Injectable()
 export class LoggerService {
@@ -8,12 +9,15 @@ export class LoggerService {
       target: 'pino-pretty',
       options: {
         colorize: true,
+        singleLine: true,
       },
     },
   });
+  private logger = pinoHttpLogger({
+    logger: this.pinoLogger,
+  });
 
-  info(req: Request, res: Response) {
-    this.pinoLogger.info(req);
-    this.pinoLogger.info(res);
+  log(req: any, res: any) {
+    this.logger(req, res);
   }
 }

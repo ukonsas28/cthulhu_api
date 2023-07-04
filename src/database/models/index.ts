@@ -1,3 +1,3 @@
-import { UsersModel } from './users/users.model';
+import { PersonsModel } from './persons/persons.model';
 
-export const models = [UsersModel];
+export const models = [PersonsModel];

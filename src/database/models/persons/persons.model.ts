@@ -1,7 +1,7 @@
 import { UpdatedModel } from '../common/updated.model';
 
-export class UsersModel extends UpdatedModel {
-  static tableName = 'users';
+export class PersonsModel extends UpdatedModel {
+  static tableName = 'persons';
 
   name: string;
   surname: string;

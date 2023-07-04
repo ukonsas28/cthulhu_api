@@ -5,7 +5,7 @@ import { LoggerService } from './logger.service';
 export class LoggerMiddleware implements NestMiddleware {
   constructor(private readonly loggerService: LoggerService) {}
   use(req: Request, res: Response, next: () => void) {
-    this.loggerService.info(req, res);
+    this.loggerService.log(req, res);
     next();
   }
 }

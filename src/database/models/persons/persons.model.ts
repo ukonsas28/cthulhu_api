@@ -1,8 +1,8 @@
-import { UpdatedModel } from '../common/updated.model';
+import { BaseModel } from '../base.model';
 
-export class PersonsModel extends UpdatedModel {
+export class PersonsModel extends BaseModel {
   static tableName = 'persons';
 
   name: string;
-  surname: string;
+  book_id: number;
 }

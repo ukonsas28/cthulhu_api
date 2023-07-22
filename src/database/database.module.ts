@@ -9,7 +9,10 @@ const providers = [
     useFactory: connectionFactory,
     inject: [ConfigService],
   },
-  ...models.map((model) => ({ provide: model.name, useValue: model })),
+  ...models.map((model) => ({
+    provide: `${model.name.toUpperCase()}_TOKEN`,
+    useValue: model,
+  })),
 ];
 
 @Global()

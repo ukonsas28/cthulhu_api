@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { PersonsModel } from '../../database/models/persons/persons.model';
 import { ModelClass } from 'objection';
+import { PersonsModel } from '../../database/models/persons/persons.model';
 
 @Injectable()
 export class PersonsService {
   constructor(
-    @Inject('PersonsModel')
+    @Inject('PERSONSMODEL_TOKEN')
     private readonly PersonsModel: ModelClass<PersonsModel>,
   ) {}
 

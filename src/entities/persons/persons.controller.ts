@@ -1,6 +1,6 @@
 import { Controller, Get, HttpCode, Param, ParseIntPipe } from '@nestjs/common';
-import { PersonsService } from './persons.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { PersonsService } from './persons.service';
 
 @ApiTags('persons')
 @Controller('persons')

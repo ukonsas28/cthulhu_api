@@ -1,13 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
+import { BaseSchema } from '../../base.schema';
 
-export class AddBookSchema {
+export class AddBookSchema extends BaseSchema {
   @IsString()
-  @ApiProperty({ example: 'Dagon', description: 'Name of the created book' })
+  @ApiProperty({ example: 'Dagon' })
   name: string;
 }
 
-export class AddBookResponseSchema {
-  @ApiProperty({ example: '1', description: 'id of the created book' })
-  id: number;
-}
+export class AddBookResponseSchema extends AddBookSchema {}

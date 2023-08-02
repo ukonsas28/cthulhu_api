@@ -1,15 +1,15 @@
 import { IsEnum, IsString } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
-import { GetOneBooksResponseSchema } from './getOne.schema';
+import { GetOneBookResponseSchema } from './getOne.schema';
 
 export class GetBooksListSchema {
   @IsString()
-  @ApiProperty({ required: false, default: 0 })
+  @ApiProperty({ required: false, default: '0' })
   offset: string;
 
   @IsString()
-  @ApiProperty({ required: false, default: 10 })
+  @ApiProperty({ required: false, default: '10' })
   limit: string;
 
   @IsEnum(['ASC', 'DESC'])
@@ -20,9 +20,9 @@ export class GetBooksListSchema {
 export class GetBooksListResponseSchema {
   @ApiProperty({
     isArray: true,
-    type: GetOneBooksResponseSchema,
+    type: GetOneBookResponseSchema,
   })
-  books: GetOneBooksResponseSchema[];
+  books: GetOneBookResponseSchema[];
   @ApiProperty({ example: '1' })
   total: number;
 }

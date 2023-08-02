@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ServerResponse, IncomingMessage } from 'http';
 import { pino } from 'pino';
 import pinoHttpLogger from 'pino-http';
 
@@ -17,7 +18,7 @@ export class LoggerService {
     logger: this.pinoLogger,
   });
 
-  log(req: any, res: any) {
+  log(req: IncomingMessage, res: ServerResponse<IncomingMessage>) {
     this.logger(req, res);
   }
 }

@@ -5,17 +5,11 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseIntPipe,
+  Patch,
   Post,
   Query,
 } from '@nestjs/common';
-import {
-  ApiOkResponse,
-  ApiOperation,
-  ApiParam,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BooksService } from './books.service';
 import { AddBookResponseSchema, AddBookSchema } from './schema/create.schema';
 import {
@@ -27,9 +21,14 @@ import {
   GetBooksListSchema,
 } from './schema/getAll.schema';
 import {
-  GetOneBooksResponseSchema,
-  GetOneBooksSchema,
+  GetOneBookResponseSchema,
+  GetOneBookParamSchema,
 } from './schema/getOne.schema';
+import {
+  UpdateBookParamSchema,
+  UpdateBookResponseSchema,
+  UpdateBookBodySchema,
+} from './schema/update.schema';
 
 @ApiTags('books')
 @Controller('books')
@@ -64,7 +63,7 @@ export class BooksController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'One book object',
-    type: GetOneBooksResponseSchema,
+    type: GetOneBookResponseSchema,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
@@ -78,14 +77,14 @@ export class BooksController {
   })
   @HttpCode(HttpStatus.OK)
   @Get('get-one/:id')
-  getOneBook(@Param() params: GetOneBooksSchema) {
-    return this.booksService.getOneBook(params);
+  getOneBook(@Param() param: GetOneBookParamSchema) {
+    return this.booksService.getOneBook(param);
   }
 
   @ApiOperation({ summary: 'Get books list' })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Books list with total',
+    description: 'Books list with total count',
     type: GetBooksListResponseSchema,
   })
   @ApiResponse({
@@ -102,5 +101,30 @@ export class BooksController {
   @Get('get-all')
   getBooksList(@Query() query: GetBooksListSchema) {
     return this.booksService.getBooksList(query);
+  }
+
+  @ApiOperation({ summary: 'Update select book' })
+  @ApiResponse({
+    status: HttpStatus.ACCEPTED,
+    description: 'Updated book object',
+    type: UpdateBookResponseSchema,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Bad Request Error',
+    type: BadRequestErrorSchema,
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'HTTP Error',
+    type: HttpExceptionErrorSchema,
+  })
+  @HttpCode(HttpStatus.OK)
+  @Patch('update/:id')
+  updateBook(
+    @Param() param: UpdateBookParamSchema,
+    @Body() body: UpdateBookBodySchema,
+  ) {
+    return this.booksService.updateBook(param, body);
   }
 }

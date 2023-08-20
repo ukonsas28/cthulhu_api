@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -29,6 +30,10 @@ import {
   UpdateBookResponseSchema,
   UpdateBookBodySchema,
 } from './schema/update.schema';
+import {
+  DeleteBookParamSchema,
+  DeleteBookResponseSchema,
+} from './schema/delete.schema';
 
 @ApiTags('books')
 @Controller('books')
@@ -126,5 +131,27 @@ export class BooksController {
     @Body() body: UpdateBookBodySchema,
   ) {
     return this.booksService.updateBook(param, body);
+  }
+
+  @ApiOperation({ summary: 'Delete book' })
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'Updated book object',
+    type: DeleteBookResponseSchema,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Bad Request Error',
+    type: BadRequestErrorSchema,
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'HTTP Error',
+    type: HttpExceptionErrorSchema,
+  })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete('delete/:id')
+  deleteBook(@Param() param: DeleteBookParamSchema) {
+    return this.booksService.deleteBook(param);
   }
 }

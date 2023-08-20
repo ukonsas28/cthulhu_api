@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ModelClass } from 'objection';
 import { BooksModel } from '../../database/models/books/books.model';
 import { AddBookSchema } from './schema/create.schema';
@@ -9,6 +9,11 @@ import {
   UpdateBookParamSchema,
 } from './schema/update.schema';
 import { getPreparedKeys, getPreparedValues } from '../../utils/prepare-data';
+import {
+  DeleteBookParamSchema,
+  DeleteBookResponseSchema,
+} from './schema/delete.schema';
+import { log } from 'console';
 
 @Injectable()
 export class BooksService {
@@ -17,48 +22,64 @@ export class BooksService {
     private readonly BooksModel: ModelClass<BooksModel>,
   ) {}
 
-  async addBook(body: AddBookSchema): Promise<AddBookSchema> {
+  async addBook({ name }: AddBookSchema): Promise<AddBookSchema> {
     const addedBook = await this.BooksModel.knex().raw(
       `INSERT INTO ${BooksModel.tableName} (name) 
-      VALUES ('${body.name}') 
+      VALUES ('${name}') 
       RETURNING *`,
     );
 
     return addedBook.rows[0];
   }
 
-  async getOneBook(param: GetOneBookParamSchema): Promise<BooksModel> {
+  async getOneBook({ id }: GetOneBookParamSchema): Promise<BooksModel> {
     const oneBook = await this.BooksModel.knex().raw(
       `SELECT * FROM ${BooksModel.tableName} 
-      WHERE id = '${param.id}'`,
+      WHERE id = '${id}'`,
     );
 
-    return oneBook.rows;
+    return oneBook.rows[0];
   }
 
-  async getBooksList(query: GetBooksListSchema): Promise<BooksModel[]> {
+  async getBooksList({
+    limit,
+    offset,
+    sortByName,
+  }: GetBooksListSchema): Promise<BooksModel[]> {
     const booksList = await this.BooksModel.knex().raw(
       `SELECT * FROM ${BooksModel.tableName} 
-      ORDER BY name ${query.sortByName || 'ASC'} 
-      OFFSET ${query.offset || 0} 
-      LIMIT ${query.limit || 10}`,
+      ORDER BY name ${sortByName || 'ASC'} 
+      OFFSET ${offset || 0} 
+      LIMIT ${limit || 10}`,
     );
 
     return booksList.rows;
   }
 
   async updateBook(
-    param: UpdateBookParamSchema,
+    { id }: UpdateBookParamSchema,
     body: UpdateBookBodySchema,
   ): Promise<BooksModel> {
     const updateBook = await this.BooksModel.knex().raw(
       `UPDATE ${BooksModel.tableName} 
       SET (${getPreparedKeys(body)}) =
       ROW(${getPreparedValues(body)})
-      WHERE id = '${param.id}'
+      WHERE id = '${id}'
       RETURNING *`,
     );
 
+    log(updateBook);
+
     return updateBook.rows[0];
+  }
+
+  async deleteBook({
+    id,
+  }: DeleteBookParamSchema): Promise<DeleteBookResponseSchema> {
+    await this.BooksModel.knex().raw(
+      `DELETE FROM ${BooksModel.tableName} WHERE id = '${id}'`,
+    );
+
+    return { status: HttpStatus.NO_CONTENT };
   }
 }

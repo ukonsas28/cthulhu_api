@@ -57,7 +57,7 @@ export class BooksController {
   @HttpCode(HttpStatus.CREATED)
   @Post('add')
   addNewBook(@Body() body: CreateBookSchema) {
-    return this.booksService.addBook(body);
+    return this.booksService.createBook(body);
   }
 
   @ApiOperation({ summary: 'Get one book' })

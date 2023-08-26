@@ -4,5 +4,5 @@ export class PersonsModel extends BaseModel {
   static tableName = 'persons';
 
   name: string;
-  book_id: number;
+  book_id: string;
 }

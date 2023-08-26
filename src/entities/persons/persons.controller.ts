@@ -56,7 +56,7 @@ export class PersonsController {
   @HttpCode(HttpStatus.CREATED)
   @Post('add')
   addNewBook(@Body() body: CreatePersonSchema) {
-    return this.personsService.addPerson(body);
+    return this.personsService.createPerson(body);
   }
 
   @ApiOperation({ summary: 'Get one person' })

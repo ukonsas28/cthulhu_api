@@ -19,14 +19,14 @@ export class BooksService {
     private readonly BooksModel: ModelClass<BooksModel>,
   ) {}
 
-  async addBook({ name }: CreateBookSchema): Promise<BooksModel> {
-    const addedBook = await this.BooksModel.knex().raw(
+  async createBook({ name }: CreateBookSchema): Promise<BooksModel> {
+    const createsBook = await this.BooksModel.knex().raw(
       `INSERT INTO ${BooksModel.tableName} (name) 
       VALUES ('${name}') 
       RETURNING *`,
     );
 
-    return addedBook.rows[0];
+    return createsBook.rows[0];
   }
 
   async getOneBook({ id }: GetOneBookParamSchema): Promise<BooksModel> {

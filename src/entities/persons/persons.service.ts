@@ -11,6 +11,7 @@ import {
 } from './schema';
 import { getPreparedKeys, getPreparedValues } from '../../utils/prepare-data';
 import { DeleteParamSchema, DeleteResponseSchema } from '../base.schema';
+import { PersonsBooksModel } from '../../database/models/persons_books/persons_books.model';
 
 @Injectable()
 export class PersonsService {
@@ -19,14 +20,17 @@ export class PersonsService {
     private readonly PersonsModel: ModelClass<PersonsModel>,
   ) {}
 
-  async addPerson({ name, bookId }: CreatePersonSchema): Promise<PersonsModel> {
-    const onePerson = await this.PersonsModel.knex().raw(
+  async createPerson({
+    name,
+    bookId,
+  }: CreatePersonSchema): Promise<PersonsModel> {
+    const createdPerson = await this.PersonsModel.knex().raw(
       `INSERT INTO ${PersonsModel.tableName} (name, book_id)
       VALUES ('${name}', '${bookId}')
       RETURNING *`,
     );
 
-    return onePerson.rows[0];
+    return createdPerson.rows[0];
   }
 
   async getPersonsList({
@@ -39,8 +43,10 @@ export class PersonsService {
         ${PersonsModel.tableName}.*,
         ${BooksModel.tableName}.name as book_name
       FROM ${PersonsModel.tableName}
+      LEFT JOIN ${PersonsBooksModel.tableName} ON
+        ${PersonsBooksModel.tableName}.person_id = ${PersonsModel.tableName}.id
       LEFT JOIN ${BooksModel.tableName} ON
-        ${PersonsModel.tableName}.book_id = ${BooksModel.tableName}.id
+        ${PersonsBooksModel.tableName}.book_id = ${BooksModel.tableName}.id
       ORDER BY name ${sortByName || 'ASC'}
       OFFSET ${offset || '0'}
       LIMIT ${limit || '10'}`,
@@ -55,8 +61,10 @@ export class PersonsService {
       ${PersonsModel.tableName}.*,
       ${BooksModel.tableName}.name as book_name
       FROM ${PersonsModel.tableName}
+      LEFT JOIN ${PersonsBooksModel.tableName} ON
+        ${PersonsBooksModel.tableName}.person_id = ${PersonsModel.tableName}.id
       LEFT JOIN ${BooksModel.tableName} ON
-        ${PersonsModel.tableName}.book_id = ${BooksModel.tableName}.id
+        ${PersonsBooksModel.tableName}.book_id = ${BooksModel.tableName}.id
       WHERE ${PersonsModel.tableName}.id = '${id}'`,
     );
 

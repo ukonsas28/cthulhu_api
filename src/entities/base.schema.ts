@@ -1,4 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsString } from 'class-validator';
+import { HttpStatus } from '@nestjs/common';
 
 export class BaseSchema {
   @ApiProperty({ example: '1' })
@@ -37,4 +39,15 @@ export class HttpExceptionErrorSchema {
     example: 'Error message',
   })
   message: string;
+}
+
+export class DeleteParamSchema {
+  @IsString()
+  @ApiProperty({ example: '1' })
+  id: string;
+}
+
+export class DeleteResponseSchema {
+  @ApiProperty({ example: HttpStatus.NO_CONTENT })
+  status: HttpStatus.NO_CONTENT;
 }

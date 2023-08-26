@@ -12,28 +12,24 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BooksService } from './books.service';
-import { AddBookResponseSchema, AddBookSchema } from './schema/create.schema';
+import {
+  AddBookResponseSchema,
+  CreateBookSchema,
+  GetBooksListResponseSchema,
+  GetBooksListSchema,
+  GetOneBookResponseSchema,
+  UpdateBookResponseSchema,
+  GetOneBookParamSchema,
+  UpdateBookBodySchema,
+  UpdateBookParamSchema,
+} from './schema';
+
 import {
   BadRequestErrorSchema,
   HttpExceptionErrorSchema,
+  DeleteParamSchema,
+  DeleteResponseSchema,
 } from '../base.schema';
-import {
-  GetBooksListResponseSchema,
-  GetBooksListSchema,
-} from './schema/getAll.schema';
-import {
-  GetOneBookResponseSchema,
-  GetOneBookParamSchema,
-} from './schema/getOne.schema';
-import {
-  UpdateBookParamSchema,
-  UpdateBookResponseSchema,
-  UpdateBookBodySchema,
-} from './schema/update.schema';
-import {
-  DeleteBookParamSchema,
-  DeleteBookResponseSchema,
-} from './schema/delete.schema';
 
 @ApiTags('books')
 @Controller('books')
@@ -60,7 +56,7 @@ export class BooksController {
   })
   @HttpCode(HttpStatus.CREATED)
   @Post('add')
-  addNewBook(@Body() body: AddBookSchema) {
+  addNewBook(@Body() body: CreateBookSchema) {
     return this.booksService.addBook(body);
   }
 
@@ -137,7 +133,7 @@ export class BooksController {
   @ApiResponse({
     status: HttpStatus.NO_CONTENT,
     description: 'Updated book object',
-    type: DeleteBookResponseSchema,
+    type: DeleteResponseSchema,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
@@ -151,7 +147,7 @@ export class BooksController {
   })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('delete/:id')
-  deleteBook(@Param() param: DeleteBookParamSchema) {
+  deleteBook(@Param() param: DeleteParamSchema) {
     return this.booksService.deleteBook(param);
   }
 }

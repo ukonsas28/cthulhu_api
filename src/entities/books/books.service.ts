@@ -1,20 +1,17 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ModelClass } from 'objection';
 import { BooksModel } from '../../database/models/books/books.model';
-import { AddBookSchema } from './schema/create.schema';
-import { GetBooksListSchema } from './schema/getAll.schema';
-import { GetOneBookParamSchema } from './schema/getOne.schema';
+
+import { getPreparedKeys, getPreparedValues } from '../../utils/prepare-data';
+
 import {
+  CreateBookSchema,
+  GetBooksListSchema,
+  GetOneBookParamSchema,
   UpdateBookBodySchema,
   UpdateBookParamSchema,
-} from './schema/update.schema';
-import { getPreparedKeys, getPreparedValues } from '../../utils/prepare-data';
-import {
-  DeleteBookParamSchema,
-  DeleteBookResponseSchema,
-} from './schema/delete.schema';
-import { log } from 'console';
-
+} from './schema';
+import { DeleteParamSchema, DeleteResponseSchema } from '../base.schema';
 @Injectable()
 export class BooksService {
   constructor(
@@ -22,7 +19,7 @@ export class BooksService {
     private readonly BooksModel: ModelClass<BooksModel>,
   ) {}
 
-  async addBook({ name }: AddBookSchema): Promise<AddBookSchema> {
+  async addBook({ name }: CreateBookSchema): Promise<BooksModel> {
     const addedBook = await this.BooksModel.knex().raw(
       `INSERT INTO ${BooksModel.tableName} (name) 
       VALUES ('${name}') 
@@ -68,14 +65,10 @@ export class BooksService {
       RETURNING *`,
     );
 
-    log(updateBook);
-
     return updateBook.rows[0];
   }
 
-  async deleteBook({
-    id,
-  }: DeleteBookParamSchema): Promise<DeleteBookResponseSchema> {
+  async deleteBook({ id }: DeleteParamSchema): Promise<DeleteResponseSchema> {
     await this.BooksModel.knex().raw(
       `DELETE FROM ${BooksModel.tableName} WHERE id = '${id}'`,
     );

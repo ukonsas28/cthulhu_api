@@ -8,7 +8,7 @@ export async function up(knex: Knex): Promise<void> {
     ALTER TABLE ${PersonsModel.tableName} DROP COLUMN book_id;
     
     CREATE TABLE  ${PersonsBooksModel.tableName} (
-        id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+        CONSTRAINT id PRIMARY KEY (person_id, book_id),
         person_id bigint REFERENCES ${PersonsModel.tableName} (id),
         book_id bigint REFERENCES ${BooksModel.tableName} (id)
     );`);

@@ -79,7 +79,7 @@ export class BooksController {
   @HttpCode(HttpStatus.OK)
   @Get('get-one/:id')
   getOneBook(@Param() param: GetOneBookParamSchema) {
-    return this.booksService.getOneBook(param);
+    return this.booksService.getBookById(param);
   }
 
   @ApiOperation({ summary: 'Get books list' })

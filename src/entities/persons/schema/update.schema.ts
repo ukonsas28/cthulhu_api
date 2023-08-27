@@ -15,7 +15,7 @@ export class UpdatePersonBodySchema {
 
   @IsString()
   @ApiProperty({ example: '1' })
-  book_id: string;
+  bookId: string;
 }
 
 export class UpdatePersonResponseSchema extends GetOnePersonResponseSchema {}

@@ -120,7 +120,7 @@ export class PersonsController {
     type: HttpExceptionErrorSchema,
   })
   @HttpCode(HttpStatus.OK)
-  @Patch('get-all')
+  @Patch('update/:id')
   updatePerson(
     @Param() param: UpdatePersonParamSchema,
     @Body() body: UpdatePersonBodySchema,

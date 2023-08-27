@@ -24,13 +24,20 @@ export class PersonsService {
     name,
     bookId,
   }: CreatePersonSchema): Promise<PersonsModel> {
-    const createdPerson = await this.PersonsModel.knex().raw(
-      `INSERT INTO ${PersonsModel.tableName} (name, book_id)
-      VALUES ('${name}', '${bookId}')
+    const {
+      rows: [createdPerson],
+    } = await this.PersonsModel.knex().raw(
+      `INSERT INTO ${PersonsModel.tableName} (name)
+      VALUES ('${name}')
       RETURNING *`,
     );
 
-    return createdPerson.rows[0];
+    await this.PersonsModel.knex().raw(
+      `INSERT INTO ${PersonsBooksModel.tableName} (book_id, person_id)
+      VALUES ('${bookId}', '${createdPerson.id}')`,
+    );
+
+    return createdPerson;
   }
 
   async getPersonsList({
@@ -38,10 +45,10 @@ export class PersonsService {
     offset,
     sortByName,
   }: GetPersonsListSchema): Promise<PersonsModel[]> {
-    const personsList = await this.PersonsModel.knex().raw(
+    const { rows: personsList } = await this.PersonsModel.knex().raw(
       `SELECT
         ${PersonsModel.tableName}.*,
-        ${BooksModel.tableName}.name as book_name
+        ${BooksModel.tableName}.name as books_name
       FROM ${PersonsModel.tableName}
       LEFT JOIN ${PersonsBooksModel.tableName} ON
         ${PersonsBooksModel.tableName}.person_id = ${PersonsModel.tableName}.id
@@ -52,11 +59,13 @@ export class PersonsService {
       LIMIT ${limit || '10'}`,
     );
 
-    return personsList.rows;
+    return personsList;
   }
 
   async getPersonById({ id }: GetOnePersonParamSchema): Promise<PersonsModel> {
-    const onePerson = await this.PersonsModel.knex().raw(
+    const {
+      rows: [onePerson],
+    } = await this.PersonsModel.knex().raw(
       `SELECT
       ${PersonsModel.tableName}.*,
       ${BooksModel.tableName}.name as book_name
@@ -68,22 +77,34 @@ export class PersonsService {
       WHERE ${PersonsModel.tableName}.id = '${id}'`,
     );
 
-    return onePerson.rows[0];
+    return onePerson;
   }
 
   async updatePerson(
     { id }: UpdatePersonParamSchema,
-    body: UpdatePersonBodySchema,
+    { bookId, ...updateBody }: UpdatePersonBodySchema,
   ): Promise<PersonsModel> {
-    const updatePerson = await this.PersonsModel.knex().raw(
+    const {
+      rows: [updatePerson],
+    } = await this.PersonsModel.knex().raw(
       `UPDATE ${BooksModel.tableName} 
-      SET (${getPreparedKeys(body)}) =
-      ROW(${getPreparedValues(body)})
+      SET (${getPreparedKeys(updateBody)}) =
+      ROW(${getPreparedValues(updateBody)})
       WHERE id = '${id}'
       RETURNING *`,
     );
 
-    return updatePerson.rows[0];
+    try {
+      await this.PersonsModel.knex().raw(
+        `INSERT INTO ${PersonsBooksModel.tableName} (book_id, person_id)
+        VALUES ('${bookId}', '${id}')`,
+      );
+    } catch (err) {
+      //TODO: разобораться как правильно обрабатывать кейс с нарушением уникальности записи
+      if (err.code !== '23505') throw err;
+    }
+
+    return updatePerson;
   }
 
   async deletePerson({ id }: DeleteParamSchema): Promise<DeleteResponseSchema> {

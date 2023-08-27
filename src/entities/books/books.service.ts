@@ -20,22 +20,26 @@ export class BooksService {
   ) {}
 
   async createBook({ name }: CreateBookSchema): Promise<BooksModel> {
-    const createsBook = await this.BooksModel.knex().raw(
+    const {
+      rows: [createsBook],
+    } = await this.BooksModel.knex().raw(
       `INSERT INTO ${BooksModel.tableName} (name) 
       VALUES ('${name}') 
       RETURNING *`,
     );
 
-    return createsBook.rows[0];
+    return createsBook;
   }
 
-  async getOneBook({ id }: GetOneBookParamSchema): Promise<BooksModel> {
-    const oneBook = await this.BooksModel.knex().raw(
+  async getBookById({ id }: GetOneBookParamSchema): Promise<BooksModel> {
+    const {
+      rows: [oneBook],
+    } = await this.BooksModel.knex().raw(
       `SELECT * FROM ${BooksModel.tableName} 
       WHERE id = '${id}'`,
     );
 
-    return oneBook.rows[0];
+    return oneBook;
   }
 
   async getBooksList({
@@ -43,21 +47,23 @@ export class BooksService {
     offset,
     sortByName,
   }: GetBooksListSchema): Promise<BooksModel[]> {
-    const booksList = await this.BooksModel.knex().raw(
+    const { rows: booksList } = await this.BooksModel.knex().raw(
       `SELECT * FROM ${BooksModel.tableName} 
       ORDER BY name ${sortByName || 'ASC'} 
       OFFSET ${offset || 0} 
       LIMIT ${limit || 10}`,
     );
 
-    return booksList.rows;
+    return booksList;
   }
 
   async updateBook(
     { id }: UpdateBookParamSchema,
     body: UpdateBookBodySchema,
   ): Promise<BooksModel> {
-    const updateBook = await this.BooksModel.knex().raw(
+    const {
+      rows: [updateBook],
+    } = await this.BooksModel.knex().raw(
       `UPDATE ${BooksModel.tableName} 
       SET (${getPreparedKeys(body)}) =
       ROW(${getPreparedValues(body)})
@@ -65,7 +71,7 @@ export class BooksService {
       RETURNING *`,
     );
 
-    return updateBook.rows[0];
+    return updateBook;
   }
 
   async deleteBook({ id }: DeleteParamSchema): Promise<DeleteResponseSchema> {
